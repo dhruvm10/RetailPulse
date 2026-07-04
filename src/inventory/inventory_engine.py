@@ -1,12 +1,28 @@
 import pandas as pd
 import numpy as np
 import os
+import yaml
 import logging
+from typing import Dict, Any
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def optimize_inventory(input_path: str, output_dir: str):
+def load_config(config_path: str) -> Dict[str, Any]:
+    with open(config_path, 'r') as file:
+        return yaml.safe_load(file)
+
+def optimize_inventory(config: Dict[str, Any], base_dir: str) -> None:
+    """
+    Computes inventory optimization metrics including Safety Stock and Reorder Points.
+    
+    Args:
+        config (Dict[str, Any]): Project configuration.
+        base_dir (str): Base directory of the project.
+    """
+    input_path = os.path.join(base_dir, config['paths']['product_features'])
+    output_dir = os.path.join(base_dir, config['paths']['reports_dir'], 'inventory')
+    
     logger.info(f"Loading product features for inventory optimization from {input_path}")
     if not os.path.exists(input_path):
         logger.error(f"Input file {input_path} does not exist.")
@@ -14,38 +30,17 @@ def optimize_inventory(input_path: str, output_dir: str):
         
     df = pd.read_csv(input_path)
     
-    # Constants
-    # Assuming lead time is 7 days and service level is 95% (Z = 1.65)
-    LEAD_TIME_DAYS = 7
-    Z_SCORE = 1.65
+    lead_time_days = config['inventory'].get('lead_time_days', 7)
+    z_score = config['inventory'].get('service_level_z_score', 1.65)
     
-    # Calculate daily variance from overall variance 
-    # (assuming average_demand is per purchase, but we need per day. 
-    # Let's approximate daily demand by total quantity / 365)
-    
-    # To do this accurately, we should calculate daily demand per product.
-    # For now, we'll use a simplified formula assuming 'average_demand' is daily.
-    
-    # Actually, let's just calculate it on the fly:
-    # average_demand from build_features is the mean quantity per order.
-    # To get daily average demand, we approximate: total_quantity / 365
     df['daily_avg_demand'] = df['total_quantity_sold'] / 365
-    df['daily_demand_std'] = np.sqrt(df['demand_variance']) # std deviation per order
+    df['daily_demand_std'] = np.sqrt(df['demand_variance'])
     
-    # Calculate Safety Stock = Z * Standard Deviation * sqrt(Lead Time)
-    df['safety_stock'] = np.ceil(Z_SCORE * df['daily_demand_std'] * np.sqrt(LEAD_TIME_DAYS))
-    
-    # Calculate Lead Time Demand
-    df['lead_time_demand'] = np.ceil(df['daily_avg_demand'] * LEAD_TIME_DAYS)
-    
-    # Calculate Reorder Point
+    df['safety_stock'] = np.ceil(z_score * df['daily_demand_std'] * np.sqrt(lead_time_days))
+    df['lead_time_demand'] = np.ceil(df['daily_avg_demand'] * lead_time_days)
     df['reorder_point'] = df['lead_time_demand'] + df['safety_stock']
-    
-    # Calculate Reorder Quantity (Economic Order Quantity simplified)
-    # Let's just recommend reordering 30 days worth of demand
     df['reorder_quantity'] = np.ceil(df['daily_avg_demand'] * 30)
     
-    # Handle NaNs
     df.fillna(0, inplace=True)
     
     os.makedirs(output_dir, exist_ok=True)
@@ -56,6 +51,6 @@ def optimize_inventory(input_path: str, output_dir: str):
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    input_file = os.path.join(base_dir, 'data', 'processed', 'product_features.csv')
-    output_directory = os.path.join(base_dir, 'reports', 'inventory')
-    optimize_inventory(input_file, output_directory)
+    config_path = os.path.join(base_dir, 'config.yaml')
+    config = load_config(config_path)
+    optimize_inventory(config, base_dir)

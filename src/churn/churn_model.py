@@ -4,15 +4,32 @@ import xgboost as xgb
 import shap
 import matplotlib.pyplot as plt
 import os
+import yaml
 import logging
 import joblib
+from typing import Dict, Any
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def train_churn_model(input_path: str, models_dir: str, reports_dir: str):
+def load_config(config_path: str) -> Dict[str, Any]:
+    with open(config_path, 'r') as file:
+        return yaml.safe_load(file)
+
+def train_churn_model(config: Dict[str, Any], base_dir: str) -> None:
+    """
+    Trains an XGBoost Churn Prediction Model and generates SHAP explainability plots.
+    
+    Args:
+        config (Dict[str, Any]): Project configuration.
+        base_dir (str): Base directory of the project.
+    """
+    input_path = os.path.join(base_dir, config['paths']['rfm_features'])
+    models_dir = os.path.join(base_dir, config['paths']['models_dir'], 'churn')
+    reports_dir = os.path.join(base_dir, config['paths']['reports_dir'], 'churn')
+    
     logger.info(f"Loading RFM data for churn prediction from {input_path}")
     if not os.path.exists(input_path):
         logger.error(f"Input file {input_path} does not exist.")
@@ -20,24 +37,27 @@ def train_churn_model(input_path: str, models_dir: str, reports_dir: str):
         
     df = pd.read_csv(input_path)
     
-    # Define churn: If a customer hasn't purchased in the last 90 days, they are considered churned.
-    # In a real setup, we'd use a temporal split to avoid leakage.
-    churn_threshold = 90
+    churn_threshold = config['features'].get('churn_threshold_days', 90)
     df['churn'] = (df['recency'] > churn_threshold).astype(int)
     
-    # Features (excluding recency to avoid direct leakage, and customer_id)
     features = ['frequency', 'monetary', 'average_order_value', 'customer_tenure_days', 'purchase_frequency_per_day']
     X = df[features]
     y = df['churn']
     
-    # Train-test split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     
     logger.info("Training XGBoost Classifier...")
-    model = xgb.XGBClassifier(n_estimators=100, max_depth=4, learning_rate=0.1, random_state=42, use_label_encoder=False, eval_metric='logloss')
+    xgb_config = config['models']['xgboost']
+    model = xgb.XGBClassifier(
+        n_estimators=xgb_config.get('n_estimators', 100),
+        max_depth=xgb_config.get('max_depth', 4),
+        learning_rate=xgb_config.get('learning_rate', 0.1),
+        random_state=xgb_config.get('random_state', 42),
+        use_label_encoder=False,
+        eval_metric='logloss'
+    )
     model.fit(X_train, y_train)
     
-    # Evaluation
     y_pred = model.predict(X_test)
     y_prob = model.predict_proba(X_test)[:, 1]
     
@@ -52,20 +72,17 @@ def train_churn_model(input_path: str, models_dir: str, reports_dir: str):
     os.makedirs(models_dir, exist_ok=True)
     joblib.dump(model, os.path.join(models_dir, 'xgboost_churn_model.pkl'))
     
-    # Generate SHAP Explainability
     logger.info("Generating SHAP explainability plots...")
     os.makedirs(reports_dir, exist_ok=True)
     
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(X_test)
     
-    # Summary Plot
     plt.figure()
     shap.summary_plot(shap_values, X_test, show=False)
     plt.savefig(os.path.join(reports_dir, 'shap_summary_plot.png'), bbox_inches='tight')
     plt.close()
     
-    # Save test metrics report
     report_content = f"""# Churn Prediction Model Evaluation
     
 - **Accuracy:** {acc:.4f}
@@ -79,14 +96,15 @@ SHAP summary plot generated and saved.
     with open(os.path.join(reports_dir, 'churn_model_evaluation.md'), "w") as f:
         f.write(report_content)
         
-    # Output Churn Probabilities
     df['churn_probability'] = model.predict_proba(X)[:, 1]
-    df.to_csv(os.path.join(os.path.dirname(input_path), 'customer_churn_probs.csv'), index=False)
+    
+    output_path = os.path.join(base_dir, config['paths']['churn_probs'])
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+    df.to_csv(output_path, index=False)
     logger.info("Churn pipeline complete.")
 
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    input_file = os.path.join(base_dir, 'data', 'processed', 'customer_rfm_features.csv')
-    models_directory = os.path.join(base_dir, 'models', 'churn')
-    reports_directory = os.path.join(base_dir, 'reports', 'churn')
-    train_churn_model(input_file, models_directory, reports_directory)
+    config_path = os.path.join(base_dir, 'config.yaml')
+    config = load_config(config_path)
+    train_churn_model(config, base_dir)
