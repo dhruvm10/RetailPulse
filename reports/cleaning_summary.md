@@ -10,13 +10,3 @@
 
 ## Dataset Preview
 Columns: ['invoice', 'stockcode', 'description', 'quantity', 'invoicedate', 'price', 'customer_id', 'country', 'revenue']
-Data Types:
-invoice                object
-stockcode              object
-description            object
-quantity                int64
-invoicedate    datetime64[ns]
-price                 float64
-customer_id            object
-country                object
-revenue               float64

@@ -34,3 +34,10 @@ models:
 inventory:
   lead_time_days: 7
   service_level_z_score: 1.65
+
+mlops:
+  mlflow_tracking_uri: "sqlite:///mlruns.db"
+  experiments:
+    segmentation: "retailpulse_segmentation"
+    forecasting: "retailpulse_forecasting"
+    churn: "retailpulse_churn"
