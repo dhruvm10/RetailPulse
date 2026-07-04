@@ -1,0 +1,17 @@
+pandas>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.2.0
+xgboost>=2.0.0
+shap>=0.42.0
+prophet>=1.1.4
+torch>=2.0.0
+plotly>=5.14.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+streamlit>=1.28.0
+mlflow>=2.7.0
+optuna>=3.4.0
+evidently>=0.4.0
+openpyxl>=3.1.2
+pytest>=7.4.0
+nbformat>=5.9.0
