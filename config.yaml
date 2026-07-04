@@ -1,0 +1,36 @@
+project:
+  name: "RetailPulse"
+  version: "1.0.0"
+
+paths:
+  raw_data: "data/raw/online_retail_II.xlsx"
+  processed_data: "data/processed/cleaned_retail_data.csv"
+  rfm_features: "data/processed/customer_rfm_features.csv"
+  product_features: "data/processed/product_features.csv"
+  segments: "data/processed/customer_segments.csv"
+  churn_probs: "data/processed/customer_churn_probs.csv"
+  reports_dir: "reports/"
+  models_dir: "models/"
+
+etl:
+  drop_null_customers: true
+  remove_cancelled_orders: true
+  remove_negative_quantities: true
+  remove_negative_prices: true
+
+features:
+  churn_threshold_days: 90
+
+models:
+  kmeans:
+    k: 5
+    random_state: 42
+  xgboost:
+    n_estimators: 100
+    max_depth: 4
+    learning_rate: 0.1
+    random_state: 42
+
+inventory:
+  lead_time_days: 7
+  service_level_z_score: 1.65
