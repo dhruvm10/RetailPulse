@@ -11,17 +11,67 @@ st.set_page_config(page_title="RetailPulse | Enterprise Retail Intelligence", pa
 
 st.markdown("""
 <style>
-    .reportview-container { background: #f8f9fa; }
-    .sidebar .sidebar-content { background: #1a252f; color: white; }
-    .stMetric {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        border-left: 6px solid #4CAF50;
+    /* Premium Dark Mode / Glassmorphism Styling */
+    .stApp {
+        font-family: 'Inter', 'Roboto', sans-serif;
     }
-    h1, h2, h3 { color: #2c3e50; font-family: 'Inter', sans-serif; }
-    .stButton>button { border-radius: 8px; font-weight: 600; }
+    
+    /* High contrast text for headers */
+    h1, h2, h3 { 
+        font-weight: 700 !important;
+        letter-spacing: -0.5px;
+    }
+    
+    /* Premium KPI Cards (Glassmorphism) */
+    [data-testid="stMetric"], [data-testid="metric-container"] {
+        background: rgba(30, 41, 59, 0.9) !important;
+        padding: 20px !important;
+        border-radius: 16px !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        border-left: 6px solid #00F0FF !important;
+        transition: transform 0.2s ease-in-out !important;
+    }
+    
+    [data-testid="stMetric"]:hover, [data-testid="metric-container"]:hover {
+        transform: translateY(-5px) !important;
+        box-shadow: 0 12px 40px 0 rgba(0, 240, 255, 0.2) !important;
+    }
+    
+    /* Make metric text pop */
+    [data-testid="stMetricValue"] > div {
+        color: #FFFFFF !important;
+        font-weight: 800 !important;
+    }
+    [data-testid="stMetricLabel"] > div, [data-testid="stMetricLabel"] p, [data-testid="stMetricLabel"] label {
+        color: #E2E8F0 !important;
+        font-weight: 600 !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* Premium Buttons */
+    .stButton>button { 
+        border-radius: 8px; 
+        font-weight: 600; 
+        background: linear-gradient(135deg, #00F0FF 0%, #0080FF 100%);
+        color: white !important;
+        border: none;
+        box-shadow: 0 4px 15px rgba(0, 128, 255, 0.3);
+        transition: all 0.3s ease;
+    }
+    .stButton>button:hover {
+        background: linear-gradient(135deg, #0080FF 0%, #00F0FF 100%);
+        box-shadow: 0 6px 20px rgba(0, 240, 255, 0.5);
+        transform: translateY(-2px);
+    }
+    
+    /* Dataframes and Tables Contrast */
+    .stDataFrame {
+        border-radius: 12px;
+        overflow: hidden;
+    }
 </style>
 """, unsafe_allow_html=True)
 

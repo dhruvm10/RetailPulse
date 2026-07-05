@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retailpulse-dashboard
+  labels:
+    app: retailpulse-dashboard
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: retailpulse-dashboard
+  template:
+    metadata:
+      labels:
+        app: retailpulse-dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: retailpulse_dashboard:latest
+        ports:
+        - containerPort: 8501
+        env:
+        - name: REDIS_URL
+          value: "redis://retailpulse-redis:6379/0"
+        - name: POSTGRES_URI
+          value: "postgresql://retail:password@retailpulse-postgres:5432/retailpulse"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retailpulse-mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: retailpulse-mlflow
+  template:
+    metadata:
+      labels:
+        app: retailpulse-mlflow
+    spec:
+      containers:
+      - name: mlflow
+        image: python:3.11-slim
+        command: ["bash", "-c", "pip install mlflow && mlflow server --host 0.0.0.0 --port 5000"]
+        ports:
+        - containerPort: 5000

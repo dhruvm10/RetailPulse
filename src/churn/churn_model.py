@@ -44,11 +44,33 @@ def train_churn_model(config: Dict[str, Any], base_dir: str) -> None:
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
     
-    xgb_config = config['models']['xgboost']
-    n_estimators = xgb_config.get('n_estimators', 100)
-    max_depth = xgb_config.get('max_depth', 4)
-    learning_rate = xgb_config.get('learning_rate', 0.1)
-    random_state = xgb_config.get('random_state', 42)
+    import optuna
+    
+    def objective(trial):
+        param = {
+            'n_estimators': trial.suggest_int('n_estimators', 50, 200),
+            'max_depth': trial.suggest_int('max_depth', 3, 10),
+            'learning_rate': trial.suggest_float('learning_rate', 0.01, 0.3),
+            'random_state': 42,
+            'use_label_encoder': False,
+            'eval_metric': 'logloss'
+        }
+        model = xgb.XGBClassifier(**param)
+        model.fit(X_train, y_train)
+        return accuracy_score(y_test, model.predict(X_test))
+
+    logger.info("Running Optuna Hyperparameter Tuning for XGBoost...")
+    optuna.logging.set_verbosity(optuna.logging.WARNING)
+    study = optuna.create_study(direction='maximize')
+    study.optimize(objective, n_trials=10)
+    
+    best_params = study.best_params
+    n_estimators = best_params['n_estimators']
+    max_depth = best_params['max_depth']
+    learning_rate = best_params['learning_rate']
+    random_state = 42
+    
+    logger.info(f"Optuna Best Params: {best_params}")
     
     with mlflow.start_run(run_name="xgboost_churn"):
         mlflow.log_param("n_estimators", n_estimators)
