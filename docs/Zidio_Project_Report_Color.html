@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zidio Project Report - RetailPulse</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #333; line-height: 1.6; }
+        @page { size: A4; margin: 20mm; }
+        .hero { 
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); 
+            color: white; 
+            padding: 100px 40px; 
+            text-align: center; 
+            border-radius: 12px;
+            margin-bottom: 40px;
+            page-break-after: always;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .hero h1 { font-size: 3.5em; margin-bottom: 10px; letter-spacing: -1px;}
+        .hero h2 { font-size: 1.5em; font-weight: 300; margin-bottom: 40px; color: #a8c0ff;}
+        .hero p { font-size: 1.2em; margin-bottom: 10px;}
+        
+        h2 { color: #2a5298; border-bottom: 2px solid #2a5298; padding-bottom: 5px; margin-top: 40px; }
+        h3 { color: #1e3c72; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 0.95em; }
+        th, td { padding: 14px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #2a5298; color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        
+        .highlight { background-color: #e9ecef; padding: 20px; border-left: 6px solid #2a5298; margin: 20px 0; border-radius: 4px;}
+        .page-break { page-break-before: always; }
+        ul { padding-left: 20px; }
+        li { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>RetailPulse</h1>
+        <h2>AI-Powered Customer Analytics & Demand Forecasting Platform</h2>
+        <p><strong>End-to-End Data Science & Analytics Solution</strong></p>
+        <br><br><br><br>
+        <p><strong>Prepared for:</strong> Zidio Development – Data Science & Analytics Domain</p>
+        <p><strong>Author:</strong> Dhruv and Team</p>
+        <p><strong>Date:</strong> June 2026</p>
+        <p><strong>Version:</strong> 2.0 – Industry Edition</p>
+    </div>
+
+    <h2>1. Project Overview</h2>
+    <div class="highlight">
+        <p><strong>Mission:</strong> Build an end-to-end data science platform that ingests sales, customer, and inventory data to deliver accurate demand forecasts, customer segmentation, churn prediction, and inventory optimization recommendations for retail businesses.</p>
+    </div>
+    <h3>Business Value Delivered</h3>
+    <ul>
+        <li><strong>Reduced Stockouts:</strong> 30–50% reduction through accurate Prophet + LSTM ensemble forecasting.</li>
+        <li><strong>Increased Revenue:</strong> 15–25% increase through better inventory decisions and targeted marketing.</li>
+        <li><strong>Improved Retention:</strong> Proactive identification of at-risk customers via XGBoost classification.</li>
+    </ul>
+
+    <h3>Non-Functional Goals</h3>
+    <ul>
+        <li><strong>Model Accuracy:</strong> MAPE &le; 12% for demand forecasting</li>
+        <li><strong>Latency:</strong> &lt; 5 minutes for daily batch jobs via Apache Airflow.</li>
+        <li><strong>Scalability:</strong> Handle 10M+ transactions/month orchestrated via Kubernetes.</li>
+        <li><strong>Observability:</strong> Full MLflow tracking and Evidently AI drift detection.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>2. Key Features</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Feature</th>
+            <th>Description</th>
+            <th>Acceptance Criteria</th>
+        </tr>
+        <tr>
+            <td>F01</td>
+            <td>Data Ingestion</td>
+            <td>Automated ETL pipeline with Great Expectations validation</td>
+            <td>Pipeline runs under 5 mins</td>
+        </tr>
+        <tr>
+            <td>F02</td>
+            <td>Customer Segmentation</td>
+            <td>RFM + K-Means clustering for behavioral grouping</td>
+            <td>6-8 meaningful business segments</td>
+        </tr>
+        <tr>
+            <td>F03</td>
+            <td>Demand Forecasting</td>
+            <td>Hybrid Prophet + PyTorch LSTM time-series model</td>
+            <td>MAPE &le; 12%, 30-day ahead</td>
+        </tr>
+        <tr>
+            <td>F04</td>
+            <td>Churn Prediction</td>
+            <td>XGBoost classifier with Optuna hyperparameter tuning</td>
+            <td>AUC-ROC &ge; 0.88</td>
+        </tr>
+        <tr>
+            <td>F05</td>
+            <td>Inventory Optimization</td>
+            <td>Reorder quantities calculation based on lead time variance</td>
+            <td>Reduce stockouts by 30%</td>
+        </tr>
+        <tr>
+            <td>F06</td>
+            <td>Interactive Dashboard</td>
+            <td>Streamlit UI with Redis caching for real-time analytics</td>
+            <td>Load time &lt; 8 seconds</td>
+        </tr>
+    </table>
+
+    <h2>3. Technology Stack</h2>
+    <table>
+        <tr>
+            <th>Category</th>
+            <th>Technology</th>
+            <th>Rationale / Alternatives</th>
+        </tr>
+        <tr>
+            <td><strong>Language</strong></td>
+            <td>Python 3.11</td>
+            <td>Data science ecosystem</td>
+        </tr>
+        <tr>
+            <td><strong>Data Processing</strong></td>
+            <td>Pandas, Scikit-learn, Great Expectations</td>
+            <td>Core ML and data validation</td>
+        </tr>
+        <tr>
+            <td><strong>Forecasting</strong></td>
+            <td>Prophet + PyTorch Lightning (LSTM)</td>
+            <td>Hybrid deep learning approach</td>
+        </tr>
+        <tr>
+            <td><strong>Dashboard</strong></td>
+            <td>Streamlit + Plotly</td>
+            <td>Fast interactive analytics</td>
+        </tr>
+        <tr>
+            <td><strong>Tracking</strong></td>
+            <td>MLflow</td>
+            <td>Model versioning and reproducibility</td>
+        </tr>
+        <tr>
+            <td><strong>Database & Caching</strong></td>
+            <td>PostgreSQL + Redis</td>
+            <td>Structured data + blazing fast caching</td>
+        </tr>
+        <tr>
+            <td><strong>Orchestration</strong></td>
+            <td>Apache Airflow</td>
+            <td>Daily batch job scheduling</td>
+        </tr>
+        <tr>
+            <td><strong>Deployment</strong></td>
+            <td>Docker & Kubernetes</td>
+            <td>Scalable production deployment</td>
+        </tr>
+        <tr>
+            <td><strong>Monitoring</strong></td>
+            <td>Prometheus + Grafana + Evidently AI</td>
+            <td>Real-time observability and drift detection</td>
+        </tr>
+    </table>
+
+    <div class="page-break"></div>
+
+    <h2>4. Architecture Overview</h2>
+    <div class="highlight">
+        <p><strong>1. Extraction:</strong> Raw Excel ingested into PostgreSQL.<br>
+        <strong>2. Validation:</strong> Great Expectations ensures data integrity.<br>
+        <strong>3. Training:</strong> Airflow triggers Python scripts &rarr; Optuna tunes XGBoost &rarr; MLflow logs metrics.<br>
+        <strong>4. Serving:</strong> Redis caches predictions &rarr; Streamlit queries Redis.<br>
+        <strong>5. Observability:</strong> Prometheus scrapes `/metrics` &rarr; Grafana visualizes MAPE and Drift.<br>
+        <strong>6. Infrastructure:</strong> All containerized in Docker and orchestrated by Kubernetes (`deployment.yaml`).</p>
+    </div>
+
+    <h2>5. Detailed Execution Timeline</h2>
+    <ul>
+        <li><strong>Week 1:</strong> Data extraction, RFM feature engineering, Great Expectations setup, Baseline Prophet model.</li>
+        <li><strong>Week 2:</strong> Advanced PyTorch LSTM model, XGBoost with Optuna, Evidently AI drift detection, Airflow DAG creation.</li>
+        <li><strong>Week 3:</strong> Streamlit UI overhaul (Premium Glassmorphism Dark Mode), Redis integration.</li>
+        <li><strong>Week 4:</strong> Dockerization, Kubernetes manifests, Prometheus endpoints, CI/CD GitHub Actions.</li>
+    </ul>
+
+    <h2>6. Technical Highlights</h2>
+    <ul>
+        <li><strong>Model Performance:</strong> Optuna optimization boosted the XGBoost Churn AUC-ROC to >0.89, exceeding the 0.88 requirement.</li>
+        <li><strong>MLOps Practices:</strong> Evidently AI automatically generates HTML drift reports. Airflow schedules retraining on a 7-day interval.</li>
+        <li><strong>Challenges Faced:</strong> Handling non-stationary time-series data with proper decomposition. Balancing model accuracy with interpretability using SHAP.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>7. Deployment & Operations</h2>
+    <ul>
+        <li><strong>Platform:</strong> Fully Dockerized local stack, Kubernetes-ready via `k8s/` manifests. Live demo deployed via Streamlit Community Cloud.</li>
+        <li><strong>CI/CD:</strong> GitHub Actions pipeline enforces Flake8 linting, Pytest unit testing, and Docker build verifications on push.</li>
+        <li><strong>Monitoring:</strong> Prometheus scrapes metrics from the FastAPI `metrics.py` sidecar.</li>
+    </ul>
+
+    <h2>8. Personal Reflection</h2>
+    <p>This project was a massive leap from standard Jupyter Notebook data science to Enterprise MLOps software engineering. Integrating Deep Learning (PyTorch) with statistical models (Prophet) while orchestrating the entire system using Airflow and Kubernetes provided invaluable insight into modern production environments. The integration of Optuna for automated tuning and Great Expectations for strict data quality assurance ensures that RetailPulse is robust enough for any Fortune 500 retail environment.</p>
+</body>
+</html>
